@@ -1,0 +1,21 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Reading {
+  id         String   @id @default(cuid())
+  spreadType String
+  clientName String?
+  question   String?
+  cards      String
+  createdAt  DateTime @default(now())
+}
