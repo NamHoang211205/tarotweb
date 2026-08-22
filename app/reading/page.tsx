@@ -1,33 +1,25 @@
-import Link from "next/link";
-import { spreads, type SpreadId } from "@/lib/spreads";
-import ReadingForm from "@/components/ReadingForm";
+import SpreadSelector from "@/components/SpreadSelector";
 
-type Props = {
-  searchParams: Promise<{ spread?: string }>;
-};
-
-export default async function ReadingPage({ searchParams }: Props) {
-  const { spread: spreadParam } = await searchParams;
-  const spread = spreadParam && spreadParam in spreads ? spreads[spreadParam as SpreadId] : null;
-
-  if (!spread) {
-    return (
-      <div className="max-w-2xl mx-auto px-4 py-10 text-center flex flex-col gap-4">
-        <p className="text-foreground/80">Kiểu trải bài không hợp lệ.</p>
-        <Link href="/" className="text-accent underline">
-          Quay lại chọn kiểu trải bài
-        </Link>
-      </div>
-    );
-  }
-
+export default function ReadingHubPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10 flex flex-col gap-6">
-      <div className="text-center flex flex-col gap-1">
-        <h1 className="text-2xl font-bold text-foreground">{spread.name}</h1>
-        <p className="text-foreground/70 text-sm">{spread.description}</p>
+    <div className="max-w-5xl mx-auto px-6 py-16 sm:py-24 flex flex-col gap-16">
+      <div className="text-center flex flex-col items-center gap-5">
+        <span className="font-mono text-xs uppercase tracking-[0.2em] text-accent-soft/80">
+          Practice solo · No judgment
+        </span>
+        <h1 className="font-display text-4xl sm:text-5xl font-semibold text-foreground leading-tight text-balance max-w-xl">
+          Listen to what the <em className="italic text-accent">cards</em> want to say
+        </h1>
+        <div className="flex items-center gap-3 text-accent-soft/50" aria-hidden>
+          <span className="w-10 h-px bg-current" />
+          <span className="text-sm">✦</span>
+          <span className="w-10 h-px bg-current" />
+        </div>
+        <p className="text-foreground/60 max-w-md leading-relaxed">
+          Pick a spread below, draw your cards, and practice reading their meaning like a real reader.
+        </p>
       </div>
-      <ReadingForm spread={spread} />
+      <SpreadSelector />
     </div>
   );
 }

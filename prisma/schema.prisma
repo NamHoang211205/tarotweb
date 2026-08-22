@@ -12,11 +12,34 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime  @default(now())
+  readings     Reading[]
+}
+
 model Reading {
   id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   spreadType String
   clientName String?
   question   String?
   cards      String
   createdAt  DateTime @default(now())
+}
+
+model Card {
+  id       String   @id
+  name     String
+  nameEn   String
+  arcana   String
+  suit     String?
+  symbol   String
+  keywords String[]
+  upright  String
+  reversed String
 }

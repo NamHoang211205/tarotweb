@@ -8,7 +8,7 @@ export default function DeleteReadingButton({ id }: { id: string }) {
   const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
-    if (!confirm("Xoá lượt xem này?")) return;
+    if (!confirm("Delete this reading?")) return;
     setDeleting(true);
     const res = await fetch(`/api/readings/${id}`, { method: "DELETE" });
     if (res.ok) {
@@ -22,9 +22,9 @@ export default function DeleteReadingButton({ id }: { id: string }) {
     <button
       onClick={handleDelete}
       disabled={deleting}
-      className="text-xs text-red-400 hover:text-red-300 transition disabled:opacity-40"
+      className="font-mono text-[11px] uppercase tracking-wider text-red-400/70 hover:text-red-400 transition-colors disabled:opacity-40 flex-none"
     >
-      {deleting ? "Đang xoá..." : "Xoá"}
+      {deleting ? "Deleting..." : "Delete"}
     </button>
   );
 }

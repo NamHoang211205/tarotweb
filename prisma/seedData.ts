@@ -1,16 +1,4 @@
-export type Suit = "wands" | "cups" | "swords" | "pentacles";
-
-export type TarotCardData = {
-  id: string;
-  name: string;
-  nameEn: string;
-  arcana: "major" | "minor";
-  suit?: Suit;
-  symbol: string;
-  keywords: string[];
-  upright: string;
-  reversed: string;
-};
+import type { Suit, TarotCardData } from "../lib/cards";
 
 const majorArcana: TarotCardData[] = [
   {
@@ -414,7 +402,3 @@ const minorArcana: TarotCardData[] = (Object.keys(suitInfo) as Suit[]).flatMap(
 );
 
 export const tarotDeck: TarotCardData[] = [...majorArcana, ...minorArcana];
-
-export function getCardById(id: string): TarotCardData | undefined {
-  return tarotDeck.find((c) => c.id === id);
-}

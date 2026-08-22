@@ -2,18 +2,22 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { SpreadDef } from "@/lib/spreads";
+import type { TarotCardData } from "@/lib/cards";
 import { drawCards, DrawnCard } from "@/lib/draw";
 import TarotCard from "./TarotCard";
 import CardResult from "./CardResult";
 
 type Props = {
   spread: SpreadDef;
+  deck: TarotCardData[];
+  isLoggedIn: boolean;
 };
 
 type SaveState = "idle" | "saving" | "saved" | "error";
 
-export default function ReadingForm({ spread }: Props) {
+export default function ReadingForm({ spread, deck, isLoggedIn }: Props) {
   const router = useRouter();
   const [clientName, setClientName] = useState("");
   const [question, setQuestion] = useState("");
@@ -24,7 +28,7 @@ export default function ReadingForm({ spread }: Props) {
   const allFlipped = drawnCards !== null && flipped.every(Boolean);
 
   function handleDraw() {
-    const cards = drawCards(spread.positions.length);
+    const cards = drawCards(deck, spread.positions.length);
     setDrawnCards(cards);
     setFlipped(new Array(cards.length).fill(false));
     setSaveState("idle");
@@ -65,47 +69,47 @@ export default function ReadingForm({ spread }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       {!drawnCards && (
-        <div className="rounded-xl border border-border bg-background-alt/60 p-5 flex flex-col gap-4">
+        <div className="rounded-2xl border border-border bg-linear-to-b from-background-alt/70 to-background-alt/30 p-7 sm:p-8 flex flex-col gap-5 shadow-[0_30px_60px_-30px_rgba(0,0,0,0.5)]">
           <div>
-            <label className="block text-sm text-foreground/80 mb-1">
-              Tên khách (không bắt buộc)
+            <label className="block font-mono text-[11px] uppercase tracking-wider text-foreground-faint mb-2">
+              Client name <span className="normal-case tracking-normal">(optional)</span>
             </label>
             <input
               value={clientName}
               onChange={(e) => setClientName(e.target.value)}
-              className="w-full rounded-md bg-background border border-border px-3 py-2 text-sm focus:outline-none focus:border-accent"
-              placeholder="Ví dụ: Lan, Minh..."
+              className="w-full rounded-lg bg-background/60 border border-border px-4 py-2.5 text-sm text-foreground placeholder:text-foreground-faint/70 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/40 transition-colors"
+              placeholder="e.g. Alex, Sam..."
             />
           </div>
           <div>
-            <label className="block text-sm text-foreground/80 mb-1">
-              Câu hỏi (không bắt buộc)
+            <label className="block font-mono text-[11px] uppercase tracking-wider text-foreground-faint mb-2">
+              Question <span className="normal-case tracking-normal">(optional)</span>
             </label>
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              className="w-full rounded-md bg-background border border-border px-3 py-2 text-sm focus:outline-none focus:border-accent"
+              className="w-full rounded-lg bg-background/60 border border-border px-4 py-2.5 text-sm text-foreground placeholder:text-foreground-faint/70 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/40 transition-colors resize-none"
               rows={2}
-              placeholder="Bạn/khách muốn hỏi điều gì?"
+              placeholder="What would you like to ask?"
             />
           </div>
           <button
             onClick={handleDraw}
-            className="self-start rounded-md bg-accent text-background font-semibold px-5 py-2 text-sm hover:brightness-110 transition"
+            className="self-center mt-2 rounded-full bg-linear-to-b from-accent to-accent-dim text-background font-semibold px-8 py-3 text-sm tracking-wide shadow-[0_10px_30px_-8px_rgba(201,162,75,0.5)] hover:shadow-[0_14px_36px_-8px_rgba(201,162,75,0.65)] hover:-translate-y-0.5 transition-all"
           >
-            Rút Bài
+            ✦ Draw Cards
           </button>
         </div>
       )}
 
       {drawnCards && (
         <>
-          <p className="text-sm text-foreground/70 text-center">
-            Nhấn vào từng lá bài để lật và xem ý nghĩa.
+          <p className="font-mono text-xs uppercase tracking-wider text-foreground-faint text-center">
+            Tap each card to flip it and reveal its meaning
           </p>
-          <div className="flex flex-wrap justify-center gap-6">
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
             {drawnCards.map((drawn, i) => (
               <TarotCard
                 key={drawn.card.id + i}
@@ -117,7 +121,7 @@ export default function ReadingForm({ spread }: Props) {
             ))}
           </div>
 
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             {drawnCards.map((drawn, i) =>
               flipped[i] ? (
                 <CardResult
@@ -130,34 +134,43 @@ export default function ReadingForm({ spread }: Props) {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 justify-center pt-2">
+          <div className="flex flex-wrap items-center gap-4 justify-center pt-4 border-t border-border-soft">
             <button
               onClick={handleDraw}
-              className="rounded-md border border-border px-4 py-2 text-sm hover:border-accent transition"
+              className="rounded-full border border-border px-5 py-2.5 text-sm text-foreground/80 hover:border-accent-soft hover:text-accent-soft transition-colors"
             >
-              Rút Lại
+              Draw Again
             </button>
-            <button
-              onClick={handleSave}
-              disabled={!allFlipped || saveState === "saving" || saveState === "saved"}
-              className="rounded-md bg-accent text-background font-semibold px-5 py-2 text-sm hover:brightness-110 transition disabled:opacity-40 disabled:cursor-not-allowed"
-            >
-              {saveState === "saving"
-                ? "Đang lưu..."
-                : saveState === "saved"
-                ? "Đã lưu ✓"
-                : "Lưu Lượt Xem Này"}
-            </button>
+            {isLoggedIn ? (
+              <button
+                onClick={handleSave}
+                disabled={!allFlipped || saveState === "saving" || saveState === "saved"}
+                className="rounded-full bg-linear-to-b from-accent to-accent-dim text-background font-semibold px-7 py-2.5 text-sm shadow-[0_10px_30px_-8px_rgba(201,162,75,0.5)] hover:-translate-y-0.5 transition-all disabled:opacity-30 disabled:hover:translate-y-0 disabled:cursor-not-allowed"
+              >
+                {saveState === "saving"
+                  ? "Saving..."
+                  : saveState === "saved"
+                  ? "Saved ✓"
+                  : "Save This Reading"}
+              </button>
+            ) : (
+              <Link
+                href="/"
+                className="font-mono text-xs uppercase tracking-wider text-accent-soft/80 hover:text-accent-soft transition-colors"
+              >
+                Log in to save this reading
+              </Link>
+            )}
             {saveState === "saved" && (
               <button
                 onClick={() => router.push("/history")}
-                className="text-sm text-accent-soft underline"
+                className="text-sm text-accent-soft underline underline-offset-4 decoration-accent-soft/40 hover:decoration-accent-soft transition-colors"
               >
-                Xem lịch sử
+                View history
               </button>
             )}
             {saveState === "error" && (
-              <span className="text-sm text-red-400">Lưu thất bại, thử lại.</span>
+              <span className="text-sm text-red-400">Failed to save, please try again.</span>
             )}
           </div>
         </>

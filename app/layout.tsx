@@ -1,45 +1,40 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import Link from "next/link";
+import { Cormorant, Be_Vietnam_Pro, IBM_Plex_Mono } from "next/font/google";
+import Navbar from "@/components/Navbar";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const cormorant = Cormorant({
+  variable: "--font-cormorant",
+  subsets: ["latin", "vietnamese"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const beVietnamPro = Be_Vietnam_Pro({
+  variable: "--font-be-vietnam",
+  subsets: ["latin", "vietnamese"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
   subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
-  title: "Tarot Luyện Tập",
-  description: "Trang luyện tập xem bài Tarot cho bản thân",
+  title: "Tarot Practice",
+  description: "Practice reading tarot cards for yourself",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="vi"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="en"
+      className={`${cormorant.variable} ${beVietnamPro.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <header className="border-b border-border">
-          <nav className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-            <Link href="/" className="font-semibold text-accent text-lg">
-              ✦ Tarot Luyện Tập
-            </Link>
-            <div className="flex gap-4 text-sm">
-              <Link href="/" className="hover:text-accent transition-colors">
-                Trải Bài
-              </Link>
-              <Link href="/history" className="hover:text-accent transition-colors">
-                Lịch Sử
-              </Link>
-            </div>
-          </nav>
-        </header>
+        <Navbar />
         <main className="flex-1">{children}</main>
       </body>
     </html>

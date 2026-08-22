@@ -1,15 +1,26 @@
-import SpreadSelector from "@/components/SpreadSelector";
+import AnimatedBackdrop from "@/components/landing/AnimatedBackdrop";
+import AuthPanel from "@/components/landing/AuthPanel";
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10 flex flex-col gap-8">
-      <div className="text-center flex flex-col gap-2">
-        <h1 className="text-3xl font-bold text-foreground">Chọn Kiểu Trải Bài</h1>
-        <p className="text-foreground/70">
-          Luyện tập xem bài tarot như một reader chuyên nghiệp — chọn kiểu trải phù hợp với câu hỏi của bạn.
-        </p>
+    <div className="relative min-h-[calc(100vh-77px)] flex items-center justify-center px-6 py-16 overflow-hidden">
+      <AnimatedBackdrop />
+
+      <div className="relative z-10 flex flex-col items-center gap-10 w-full">
+        <div className="text-center flex flex-col items-center gap-4 max-w-lg">
+          <span className="font-mono text-xs uppercase tracking-[0.25em] text-accent-soft/80">
+            Step through the veil
+          </span>
+          <h1 className="font-display italic text-4xl sm:text-5xl font-semibold text-foreground leading-tight text-balance">
+            The cards are already <span className="text-accent">waiting</span> for you
+          </h1>
+          <p className="text-foreground/60 text-sm max-w-sm leading-relaxed">
+            Sign in to keep your readings, or step in as a guest and let the cards speak.
+          </p>
+        </div>
+
+        <AuthPanel />
       </div>
-      <SpreadSelector />
     </div>
   );
 }
