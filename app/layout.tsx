@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Cormorant, Be_Vietnam_Pro, IBM_Plex_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
+import AmbientStars from "@/components/AmbientStars";
 import "./globals.css";
 
 const cormorant = Cormorant({
@@ -34,6 +35,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${cormorant.variable} ${beVietnamPro.variable} ${ibmPlexMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <AmbientStars />
         <Navbar />
         <main className="flex-1">{children}</main>
       </body>

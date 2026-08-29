@@ -2,15 +2,17 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { spreads, type SpreadId } from "@/lib/spreads";
 import { getAllCards } from "@/lib/cards";
-import ReadingForm from "@/components/ReadingForm";
+import { getTopicById } from "@/lib/topics";
+import ReadingForm from "@/components/reading/ReadingForm";
 
 export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ spread: string }>;
+  searchParams: Promise<{ topic?: string }>;
 };
 
-export default async function ReadingPage({ params }: Props) {
+export default async function ReadingPage({ params, searchParams }: Props) {
   const { spread: spreadParam } = await params;
   const spread = spreadParam in spreads ? spreads[spreadParam as SpreadId] : null;
 
@@ -25,7 +27,12 @@ export default async function ReadingPage({ params }: Props) {
     );
   }
 
-  const [session, deck] = await Promise.all([auth(), getAllCards()]);
+  const [{ topic: topicParam }, session, deck] = await Promise.all([
+    searchParams,
+    auth(),
+    getAllCards(),
+  ]);
+  const initialQuestion = topicParam ? getTopicById(topicParam)?.question ?? "" : "";
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12 sm:py-16 flex flex-col gap-10">
@@ -38,7 +45,12 @@ export default async function ReadingPage({ params }: Props) {
         </h1>
         <p className="text-foreground/60 text-sm max-w-md">{spread.description}</p>
       </div>
-      <ReadingForm spread={spread} deck={deck} isLoggedIn={!!session?.user} />
+      <ReadingForm
+        spread={spread}
+        deck={deck}
+        isLoggedIn={!!session?.user}
+        initialQuestion={initialQuestion}
+      />
     </div>
   );
 }

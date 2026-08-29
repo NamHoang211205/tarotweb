@@ -8,22 +8,32 @@ import type { TarotCardData } from "@/lib/cards";
 import { drawCards, DrawnCard } from "@/lib/draw";
 import TarotCard from "./TarotCard";
 import CardResult from "./CardResult";
+import ChatPanel, { type ChatMessage } from "./ChatPanel";
+import QuickTopics from "./QuickTopics";
 
 type Props = {
   spread: SpreadDef;
   deck: TarotCardData[];
   isLoggedIn: boolean;
+  /** Pre-filled when arriving from a topic link (e.g. /reading/single?topic=love). */
+  initialQuestion?: string;
 };
 
 type SaveState = "idle" | "saving" | "saved" | "error";
 
-export default function ReadingForm({ spread, deck, isLoggedIn }: Props) {
+export default function ReadingForm({
+  spread,
+  deck,
+  isLoggedIn,
+  initialQuestion = "",
+}: Props) {
   const router = useRouter();
   const [clientName, setClientName] = useState("");
-  const [question, setQuestion] = useState("");
+  const [question, setQuestion] = useState(initialQuestion);
   const [drawnCards, setDrawnCards] = useState<DrawnCard[] | null>(null);
   const [flipped, setFlipped] = useState<boolean[]>([]);
   const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
 
   const allFlipped = drawnCards !== null && flipped.every(Boolean);
 
@@ -32,6 +42,7 @@ export default function ReadingForm({ spread, deck, isLoggedIn }: Props) {
     setDrawnCards(cards);
     setFlipped(new Array(cards.length).fill(false));
     setSaveState("idle");
+    setChatMessages([]);
   }
 
   function handleFlip(index: number) {
@@ -59,6 +70,7 @@ export default function ReadingForm({ spread, deck, isLoggedIn }: Props) {
             reversed: d.reversed,
             position: spread.positions[i]?.label,
           })),
+          messages: chatMessages,
         }),
       });
       if (!res.ok) throw new Error("save failed");
@@ -83,6 +95,7 @@ export default function ReadingForm({ spread, deck, isLoggedIn }: Props) {
               placeholder="e.g. Alex, Sam..."
             />
           </div>
+          <QuickTopics onSelect={setQuestion} />
           <div>
             <label className="block font-mono text-[11px] uppercase tracking-wider text-foreground-faint mb-2">
               Question <span className="normal-case tracking-normal">(optional)</span>
@@ -134,6 +147,16 @@ export default function ReadingForm({ spread, deck, isLoggedIn }: Props) {
             )}
           </div>
 
+          {allFlipped && (
+            <ChatPanel
+              spread={spread}
+              drawnCards={drawnCards}
+              question={question}
+              messages={chatMessages}
+              onMessagesChange={setChatMessages}
+            />
+          )}
+
           <div className="flex flex-wrap items-center gap-4 justify-center pt-4 border-t border-border-soft">
             <button
               onClick={handleDraw}
@@ -155,7 +178,7 @@ export default function ReadingForm({ spread, deck, isLoggedIn }: Props) {
               </button>
             ) : (
               <Link
-                href="/"
+                href="/login"
                 className="font-mono text-xs uppercase tracking-wider text-accent-soft/80 hover:text-accent-soft transition-colors"
               >
                 Log in to save this reading

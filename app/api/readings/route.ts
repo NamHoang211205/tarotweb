@@ -22,11 +22,17 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { spreadType, clientName, question, cards } = body;
+  const { spreadType, clientName, question, cards, messages } = body;
 
   if (!spreadType || !Array.isArray(cards)) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
+
+  const chatMessages: { role: string; content: string }[] = Array.isArray(messages)
+    ? messages.filter(
+        (m) => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string"
+      )
+    : [];
 
   const reading = await prisma.reading.create({
     data: {
@@ -35,6 +41,7 @@ export async function POST(req: NextRequest) {
       clientName: clientName || null,
       question: question || null,
       cards: JSON.stringify(cards),
+      messages: { create: chatMessages },
     },
   });
 

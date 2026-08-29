@@ -17,7 +17,7 @@ const spreadIcons: Record<string, string> = {
 
 export default async function HistoryPage() {
   const session = await auth();
-  if (!session?.user) redirect("/");
+  if (!session?.user) redirect("/login");
 
   const readings = await prisma.reading.findMany({
     where: { userId: session.user.id },

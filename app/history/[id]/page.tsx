@@ -4,8 +4,9 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { spreads, type SpreadId } from "@/lib/spreads";
 import { getCardById } from "@/lib/cards";
-import CardResult from "@/components/CardResult";
+import CardResult from "@/components/reading/CardResult";
 import DeleteReadingButton from "@/components/DeleteReadingButton";
+import ChatBubble from "@/components/reading/ChatBubble";
 
 export const dynamic = "force-dynamic";
 
@@ -17,10 +18,13 @@ type Props = {
 
 export default async function ReadingDetailPage({ params }: Props) {
   const session = await auth();
-  if (!session?.user) redirect("/");
+  if (!session?.user) redirect("/login");
 
   const { id } = await params;
-  const reading = await prisma.reading.findUnique({ where: { id } });
+  const reading = await prisma.reading.findUnique({
+    where: { id },
+    include: { messages: { orderBy: { createdAt: "asc" } } },
+  });
 
   if (!reading || reading.userId !== session.user.id) notFound();
 
@@ -73,6 +77,24 @@ export default async function ReadingDetailPage({ params }: Props) {
           );
         })}
       </div>
+
+      {reading.messages.length > 0 && (
+        <div className="rounded-2xl border border-border bg-linear-to-b from-background-alt/50 to-background-alt/20 p-5 sm:p-6 flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-accent-soft">🔮</span>
+            <h3 className="font-display text-lg font-semibold text-foreground">Reader&apos;s Notes</h3>
+          </div>
+          <div className="flex flex-col gap-3">
+            {reading.messages.map((m) => (
+              <ChatBubble
+                key={m.id}
+                role={m.role === "user" ? "user" : "assistant"}
+                content={m.content}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

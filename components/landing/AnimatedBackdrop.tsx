@@ -51,12 +51,15 @@ const floatingCards: FloatingCard[] = [
 const orbs: Orb[] = [
   { top: "10%", left: "15%", size: 420, color: "rgba(169,125,216,0.16)", x: 40, y: -30, duration: 14 },
   { top: "55%", left: "80%", size: 380, color: "rgba(201,162,75,0.12)", x: -35, y: 25, duration: 16 },
-  { top: "75%", left: "20%", size: 320, color: "rgba(169,125,216,0.1)", x: 25, y: -20, duration: 12 },
+  { top: "75%", left: "20%", size: 320, color: "rgba(63,191,174,0.12)", x: 25, y: -20, duration: 12 },
 ];
 
 export default function AnimatedBackdrop() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+      <div className="landing-ring absolute top-1/2 left-1/2 w-160 h-160 -translate-x-1/2 -translate-y-1/2 rounded-full border border-accent-soft/10" />
+      <div className="landing-ring-reverse absolute top-1/2 left-1/2 w-120 h-120 -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-accent/10" />
+
       {orbs.map((orb, i) => {
         const style: CSSVars = {
           top: orb.top,
@@ -105,7 +108,7 @@ export default function AnimatedBackdrop() {
         return (
           <div
             key={`card-${i}`}
-            className="landing-float-card absolute rounded-lg border border-accent-soft/25 bg-linear-to-br from-background-alt/40 to-background/20 flex items-center justify-center text-accent-soft/40"
+            className="landing-float-card hidden sm:flex absolute rounded-lg border border-accent-soft/25 bg-linear-to-br from-background-alt/40 to-background/20 items-center justify-center text-accent-soft/40"
             style={style}
           >
             {card.symbol}

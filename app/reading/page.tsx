@@ -1,4 +1,4 @@
-import SpreadSelector from "@/components/SpreadSelector";
+import SpreadSelector from "@/components/reading/SpreadSelector";
 
 export default function ReadingHubPage() {
   return (
