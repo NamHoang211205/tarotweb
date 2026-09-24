@@ -199,4 +199,10 @@ h1, h2, h3 {
     transform: none;
     transition: none;
   }
+
+  /* The card still turns over — it just does so instantly instead of
+     animating through a 3D rotation. */
+  .card-flip-inner {
+    transition: none;
+  }
 }
